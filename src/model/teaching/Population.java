@@ -60,6 +60,12 @@ public class Population {
 		
 		return null;
 	}
+	
+	public int size() {
+		if(generations == null)
+			return 0;
+		return generations.size();
+	}
 
 	public LinkedList<Generation> getGenerations() {
 		return generations;
@@ -69,6 +75,20 @@ public class Population {
 		this.generations = generations;
 	}
 	
-	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("Population for teaching neural network with genetic algorithm.");
+		sb.append("\n");
+		sb.append("The population contains " + generations.size() + " generations.");
+		sb.append("\n");
+		Generation last = generations.getLast();
+		last.orderByFitness();
+		sb.append("The biggest fitness point of the last generation is " + last.getMaxFitnessPoint());
+		sb.append("\n");		
+		
+		return sb.toString();
+	}
 	
 }

@@ -11,12 +11,15 @@ public class Generation {
 	private int generationNumber;
 	@SerializedName("Entities")
 	private List<Entity> entities;
+	@SerializedName("maxFitnessPoint")
+	private int maxFitnessPoint = 0;
 
 	
 	Generation(){}
 	
 	public void orderByFitness() {
 		Collections.sort(entities, new Entity());
+		maxFitnessPoint = entities.get(0).getFitness();
 	}
 	
 	public Entity crossOver(Entity e1, Entity e2) {
@@ -43,6 +46,14 @@ public class Generation {
 
 	public void setGenerationNumber(int generationNumber) {
 		this.generationNumber = generationNumber;
+	}
+
+	public int getMaxFitnessPoint() {
+		return maxFitnessPoint;
+	}
+
+	public void setMaxFitnessPoint(int maxFitnessPoint) {
+		this.maxFitnessPoint = maxFitnessPoint;
 	}
 	
 	

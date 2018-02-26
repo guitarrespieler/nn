@@ -3,10 +3,15 @@ package test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 import model.teaching.Population;
 import model.teaching.Serializer;
@@ -73,6 +78,18 @@ class SerializerTester {
 		
 		assertEquals(pop.getGenerations().size(), pop2.getGenerations().size());
 	
+	}
+	
+	@Test
+	void deserializeLastGen() throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+		serializeMoreTest();
+		
+		Serializer ser = new Serializer(null);
+		
+		Population pop2 = ser.deserializeLastGeneration();
+		
+		assertEquals(pop2.getGenerations().size(), 1);
+		assertEquals(pop2.getGenerations().getFirst().getGenerationNumber(), 59);
 	}
 
 }

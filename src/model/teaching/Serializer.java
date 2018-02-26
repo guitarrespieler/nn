@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 public class Serializer implements Runnable{
 
@@ -59,11 +61,14 @@ public class Serializer implements Runnable{
 		
 		LinkedList<Generation> generations = new LinkedList<>();
 		
+		File dir = new File(dirName);
+		if(!dir.exists()) {
+			Population pop = new Population();
+			pop.setGenerations(generations);
+			return pop;
+		}
+		
 		while(true) {
-			File dir = new File(dirName);
-			if(!dir.exists())
-				break;
-			
 			File f = new File(dirName + preName + i + extrension);
 			
 			if(!f.exists())
@@ -77,6 +82,32 @@ public class Serializer implements Runnable{
 			generations.add(gen);
 			
 			i++;
+		}
+		
+		Population pop = new Population();
+		pop.setGenerations(generations);
+		return pop;
+	}
+	
+	public Population deserializeLastGeneration() throws FileNotFoundException {
+		if(gson == null)
+			gson = new Gson();
+		
+		LinkedList<Generation> generations = new LinkedList<>();
+		
+		File dir = new File(dirName);
+		if(dir.exists()) {
+			int i = dir.listFiles().length - 1;
+			
+			File f = new File(dirName + preName + i + extrension);
+				
+			if(f.exists()) {
+				
+				Generation gen = gson.fromJson(new FileReader(f), Generation.class);
+				
+				if(gen != null)
+					generations.add(gen);
+			}
 		}
 		
 		Population pop = new Population();

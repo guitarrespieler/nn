@@ -3,15 +3,10 @@ package test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 
 import model.teaching.Population;
 import model.teaching.Serializer;
@@ -19,7 +14,7 @@ import model.teaching.Serializer;
 class SerializerTester {
 
 	Population pop;
-	
+	int[] architecture = {10,10,6};
 	@BeforeEach
 	void initPop() {
 		pop = new Population();
@@ -27,29 +22,26 @@ class SerializerTester {
 	
 	@Test
 	void serializeTest() throws IOException {
-		pop.addNewGeneration(Population.createRandomGeneration(50, 20));
 		
-		Serializer ser = new Serializer(pop);
+		pop.addNewGeneration(Population.createRandomGeneration(50, 20, architecture));
 		
-		ser.run();
+		Serializer.serialize(pop);
 		
-		File f = new File(Serializer.dirName + Serializer.preName + 0 + Serializer.extrension);
+		File f = new File(Serializer.dirName + Serializer.preName + 0 + Serializer.extension);
 		
 		assertTrue(f.exists());
 	}
 	
 	@Test
-	void serializeMoreTest() {
+	void serializeMoreTest() throws IOException {
 		for(int i = 0; i < 60; i++){
-			pop.addNewGeneration(Population.createRandomGeneration(50, 20));
+			pop.addNewGeneration(Population.createRandomGeneration(50, 20, architecture));
 		}
 		
-		Serializer ser = new Serializer(pop);
-		
-		ser.run();
+		Serializer.serialize(pop);
 		
 		for(int i = 0; i < 60; i++) {			
-			File f = new File(Serializer.dirName + Serializer.preName + i + Serializer.extrension);
+			File f = new File(Serializer.dirName + Serializer.preName + i + Serializer.extension);
 			
 			assertTrue(f.exists());
 		}
@@ -58,9 +50,7 @@ class SerializerTester {
 	
 	@Test
 	void deserializePopulation() throws IOException {
-		Serializer ser = new Serializer(null);
-		
-		Population pop2 = ser.deserialize();
+		Population pop2 = Serializer.deserialize();
 		
 		assertNotNull(pop2);
 	}
@@ -71,9 +61,7 @@ class SerializerTester {
 		
 		//now read it back
 				
-		Serializer ser = new Serializer(null);
-		
-		Population pop2 = ser.deserialize();		
+		Population pop2 = Serializer.deserialize();		
 		assertNotNull(pop2);
 		
 		assertEquals(pop.getGenerations().size(), pop2.getGenerations().size());
@@ -81,12 +69,10 @@ class SerializerTester {
 	}
 	
 	@Test
-	void deserializeLastGen() throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+	void deserializeLastGen() throws IOException {
 		serializeMoreTest();
 		
-		Serializer ser = new Serializer(null);
-		
-		Population pop2 = ser.deserializeLastGeneration();
+		Population pop2 = Serializer.deserializeLastGeneration();
 		
 		assertEquals(pop2.getGenerations().size(), 1);
 		assertEquals(pop2.getGenerations().getFirst().getGenerationNumber(), 59);

@@ -1,5 +1,6 @@
 package model.neuralnetwork;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 import com.google.gson.annotations.SerializedName;
@@ -15,10 +16,10 @@ public class NeuralNetwork {
 	 * List of layers
 	 */
 	@SerializedName("layers")
-	private ArrayList<Layer> layers;
+	private LinkedList<Layer> layers;
 
 	
-	private static Random randomGen = new Random(0);
+	private static Random randomGen = new Random();
 	
 	/**
 	 * várható érték
@@ -36,7 +37,7 @@ public class NeuralNetwork {
 	public NeuralNetwork calculate(Activation hiddenLayersActivationFunction,
 			Activation outputLayersActivationFunction) {
 		
-		layers.get(0).activateLayer(inputLayer, hiddenLayersActivationFunction);
+		layers.getFirst().activateLayer(inputLayer, hiddenLayersActivationFunction);
 		
 		int layersSize = layers.size();
 		
@@ -52,9 +53,24 @@ public class NeuralNetwork {
 	 * @param values the input values of the Neural Network
 	 */
 	public NeuralNetwork setInputLayer(float[] values) {
-		inputLayer = new Layer(null, new float[values.length], values);
+		inputLayer = new Layer(null, null, values);
 		
 		return this;
+	}
+	
+	/**
+	 * 
+	 * @param layer
+	 * @return
+	 */
+	public NeuralNetwork setInputLayer(Layer layer) {
+		inputLayer = new Layer(layer, null);
+		
+		return this;
+	}
+	
+	public Layer getInputLayer() {
+		return inputLayer;
 	}
 	
 	/**
@@ -66,7 +82,7 @@ public class NeuralNetwork {
 		if(inputLayer == null)
 			throw new NullPointerException("add input layer first.");
 		
-		layers = new ArrayList<>();
+		layers = new LinkedList<>();
 		
 		Layer previousLayer = inputLayer; 
 		
@@ -136,6 +152,15 @@ public class NeuralNetwork {
 		return this;
 	}
 	
+	public NeuralNetwork addLayer(Layer layer) {
+		if(layers == null)
+			layers = new LinkedList<>();
+		
+		layers.add(layer);
+		
+		return this;
+	}
+	
 	/**
 	 * Normál eloszlású random számot generál 
 	 * @param averageValue várható értékkel és
@@ -149,5 +174,8 @@ public class NeuralNetwork {
 		return layers.get(layers.size() - 1).getValues();
 	}
 	
+	public LinkedList<Layer> getLayers(){
+		return layers;
+	}
 	
 }

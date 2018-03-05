@@ -17,24 +17,25 @@ public class ActivationFunctions {
 	}
 	
 	private static float logistic(float value) {
-		double dvalue = value;
+		double dvalue = -1.0 * value;
 		
-		double epow = Math.exp(-dvalue);
+		float epow = (float) Math.exp(dvalue);
 		
-		float result = (float) (1.0f / (1.0f + epow));
+		float result = (1.0f / (1.0f + epow));
 		
 		return result;
 	}
 
 	private static float tanh(float value) {
 		double dvalue = value;
+		double dvalue2 = -value;
 		
-		double val1 = Math.exp(dvalue);
-		double val2 = Math.exp(-dvalue);
+		float val1 = (float) Math.exp(dvalue);
+		float val2 = (float) Math.exp(dvalue2);
 		
-		double result = (val1 - val2) / (val1 + val2);
+		float result = (val1 - val2) / (val1 + val2);
 		
-		return (float) result;
+		return result;
 	}
 
 	private static float linear(float value) {

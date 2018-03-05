@@ -1,29 +1,24 @@
 package model.teaching;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
 
 import com.google.gson.annotations.SerializedName;
 
 public class Generation {
 
 	@SerializedName("generationNumber")
-	private int generationNumber;
-	@SerializedName("Entities")
-	private List<Entity> entities;
+	private int generationNumber = 0;
 	@SerializedName("maxFitnessPoint")
 	private int maxFitnessPoint = 0;
+	@SerializedName("Entities")
+	private LinkedList<Entity> entities;
 
-	
 	Generation(){}
 	
 	public void orderByFitness() {
-		Collections.sort(entities, new Entity());
-		maxFitnessPoint = entities.get(0).getFitness();
-	}
-	
-	public Entity crossOver(Entity e1, Entity e2) {
-		return null;
+		Collections.sort(entities, entities.getFirst());
+		maxFitnessPoint = entities.getFirst().getFitness();
 	}
 	
 	public int getGenerationSize() {
@@ -32,11 +27,11 @@ public class Generation {
 		else return entities.size();
 	}
 
-	public List<Entity> getEntities() {
+	public LinkedList<Entity> getEntities() {
 		return entities;
 	}
 
-	public void setEntities(List<Entity> entities) {
+	public void setEntities(LinkedList<Entity> entities) {
 		this.entities = entities;
 	}
 

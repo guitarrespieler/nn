@@ -8,55 +8,50 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 
-public class Serializer implements Runnable{
+public class Serializer{
 
-	private Gson gson;
-	
-	private Population population;
+	private static Gson gson = new Gson();
 	
 	public static final String dirName = "population";
 	public static final String preName = "/generation_";
-	public static final String extrension = ".json";
+	public static final String extension = ".json";
 	
-	
-	public Serializer(Population pop){
-		this.population = pop;
-	}
-	
-	public void serialize(Population pop) throws IOException {
-		if(gson == null)
-			gson = new Gson();
+	public static void serialize(Population pop) throws IOException {
+		LinkedList<Generation> generations = pop.getGenerations();
 		
 		File dir = new File(dirName);
 		
 		if(!dir.exists())
 			dir.mkdirs();
 		
-		for (Generation gen : pop.getGenerations()) {
-			
-			String str = gson.toJson(gen);
-			
-			File f = new File(dirName + preName + gen.getGenerationNumber() + extrension);
-			
-			if(!f.exists())
-				f.createNewFile();
-			
-			FileWriter fw = new FileWriter(f);
-			
-			fw.write(str);
-			fw.flush();
-			fw.close();		
+		for (Generation gen : generations) {
+			serializeThisGeneration(gen);
 		}
 		
 	}
 	
-	public Population deserialize() throws IOException {
-		if(gson == null)
-			gson = new Gson();
+	public static void serializeThisGeneration(Generation gen) throws IOException {
+		File dir = new File(dirName);
 		
+		if(!dir.exists())
+			dir.mkdirs();
+			
+		String str = gson.toJson(gen);
+		
+		File f = new File(dirName + preName + gen.getGenerationNumber() + extension);
+		
+		if(!f.exists())
+			f.createNewFile();
+		
+		FileWriter fw = new FileWriter(f);
+		
+		fw.write(str);
+		fw.flush();
+		fw.close();				
+	}
+	
+	public static Population deserialize() throws IOException {
 		int i = 0;
 		
 		LinkedList<Generation> generations = new LinkedList<>();
@@ -69,7 +64,7 @@ public class Serializer implements Runnable{
 		}
 		
 		while(true) {
-			File f = new File(dirName + preName + i + extrension);
+			File f = new File(dirName + preName + i + extension);
 			
 			if(!f.exists())
 				break;
@@ -89,17 +84,14 @@ public class Serializer implements Runnable{
 		return pop;
 	}
 	
-	public Population deserializeLastGeneration() throws FileNotFoundException {
-		if(gson == null)
-			gson = new Gson();
-		
+	public static Population deserializeLastGeneration() throws FileNotFoundException {
 		LinkedList<Generation> generations = new LinkedList<>();
 		
 		File dir = new File(dirName);
 		if(dir.exists()) {
 			int i = dir.listFiles().length - 1;
 			
-			File f = new File(dirName + preName + i + extrension);
+			File f = new File(dirName + preName + i + extension);
 				
 			if(f.exists()) {
 				
@@ -113,17 +105,5 @@ public class Serializer implements Runnable{
 		Population pop = new Population();
 		pop.setGenerations(generations);
 		return pop;
-	}
-
-	@Override
-	public void run() {
-		gson = new Gson();
-		
-		try {
-			serialize(population);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
 	}
 }

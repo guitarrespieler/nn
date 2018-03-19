@@ -8,16 +8,24 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class Serializer{
 
-	private static Gson gson = new Gson();
+	private static Gson gson;
 	
 	public static final String dirName = "population";
 	public static final String preName = "/generation_";
 	public static final String extension = ".json";
 	
 	public static void serialize(Population pop) throws IOException {
+		if(gson == null) {
+			GsonBuilder builder = new GsonBuilder();
+			builder.serializeSpecialFloatingPointValues();
+			gson = builder.create();
+		}
+
+		
 		LinkedList<Generation> generations = pop.getGenerations();
 		
 		File dir = new File(dirName);
@@ -36,7 +44,7 @@ public class Serializer{
 		
 		if(!dir.exists())
 			dir.mkdirs();
-			
+		
 		String str = gson.toJson(gen);
 		
 		File f = new File(dirName + preName + gen.getGenerationNumber() + extension);
@@ -52,6 +60,12 @@ public class Serializer{
 	}
 	
 	public static Population deserialize() throws IOException {
+		if(gson == null) {
+			GsonBuilder builder = new GsonBuilder();
+			builder.serializeSpecialFloatingPointValues();
+			gson = builder.create();
+		}
+		
 		int i = 0;
 		
 		LinkedList<Generation> generations = new LinkedList<>();
@@ -85,6 +99,12 @@ public class Serializer{
 	}
 	
 	public static Population deserializeLastGeneration() throws FileNotFoundException {
+		if(gson == null) {
+			GsonBuilder builder = new GsonBuilder();
+			builder.serializeSpecialFloatingPointValues();
+			gson = builder.create();
+		}
+		
 		LinkedList<Generation> generations = new LinkedList<>();
 		
 		File dir = new File(dirName);

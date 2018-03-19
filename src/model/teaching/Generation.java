@@ -13,6 +13,8 @@ public class Generation {
 	private int maxFitnessPoint = 0;
 	@SerializedName("Entities")
 	private LinkedList<Entity> entities;
+	
+//	public static transient int numOfmutatedGenes = 0;
 
 	Generation(){}
 	

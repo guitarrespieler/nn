@@ -29,22 +29,27 @@ public class NeuralNetwork {
 	/**
 	 * szórás
 	 */
-	public static final float deviationVal = 0.1f;
+	public static final float deviationVal = 2.0f;
 	
 	/**
 	 * calculates the output values.
 	 */
 	public NeuralNetwork calculate(Activation hiddenLayersActivationFunction,
 			Activation outputLayersActivationFunction) {
+		Layer prevLayer = inputLayer;
 		
-		layers.getFirst().activateLayer(inputLayer, hiddenLayersActivationFunction);
+		int numberOfLayers = layers.size();
 		
-		int layersSize = layers.size();
-		
-		for(int i = 1; i < layersSize - 1; i++) {
-			layers.get(i).activateLayer(layers.get(i - 1),hiddenLayersActivationFunction);
+		for(int i = 0; i < numberOfLayers; i++) {
+			Layer actualLayer = layers.get(i);
+			
+			if(i < numberOfLayers - 1)
+				actualLayer.activateLayer(prevLayer, hiddenLayersActivationFunction);
+			else
+				actualLayer.activateLayer(prevLayer, outputLayersActivationFunction);
+			
+			prevLayer = actualLayer;
 		}
-		layers.get(layersSize - 1).activateLayer(layers.get(layersSize - 2),outputLayersActivationFunction);
 		
 		return this;
 	}
@@ -64,7 +69,7 @@ public class NeuralNetwork {
 	 * @return
 	 */
 	public NeuralNetwork setInputLayer(Layer layer) {
-		inputLayer = new Layer(layer, null);
+		inputLayer = new Layer(layer.getInputWeights(), layer.getBiases(), layer.getValues());
 		
 		return this;
 	}
@@ -89,7 +94,7 @@ public class NeuralNetwork {
 		for(int i = 0; i < numberOfNeuronsPerLayer.length; i++) {
 			int layerSize = numberOfNeuronsPerLayer[i];
 			
-			Layer actualLayer = new Layer(previousLayer.size(), layerSize);
+			Layer actualLayer = new Layer(previousLayer.numberOfNeurons(), layerSize);
 			
 			layers.add(actualLayer);
 			
@@ -121,13 +126,14 @@ public class NeuralNetwork {
 			
 			ArrayList<float[]> weightsList = new ArrayList<>();
 			
-			int previousLayerSize = previousLayer.size();
+			int previousLayerSize = previousLayer.numberOfNeurons();
 			
-			for(int k = 0; k < previousLayerSize; k++) {
+			for(int k = 0; k < layer.numberOfNeurons(); k++) {
 				float[] weights = new float[previousLayerSize];
 				
 				for(int j = 0; j < weights.length; j++) {
 					weights[j] = generateRandomGaussian(averageVal, deviationVal);
+//					weights[j] = generateRandomFloat() * 2.0f - 1.0f;
 				}
 				
 				weightsList.add(weights);
@@ -140,12 +146,13 @@ public class NeuralNetwork {
 	
 	public NeuralNetwork generateRandomBiases() {
 		for (Layer layer : layers) {
-			int layerSize = layer.size();
+			int layerSize = layer.numberOfNeurons();
 			
 			float[] biases = new float[layerSize];
 			
 			for(int i = 0; i < layerSize; i++) {
-				biases[i] = generateRandomGaussian(averageVal, deviationVal);						
+//				biases[i] = generateRandomGaussian(averageVal, deviationVal);
+				biases[i] = generateRandomFloat() * 2.0f - 1.0f;
 			}
 			layer.setBiases(biases);
 		}
@@ -171,11 +178,14 @@ public class NeuralNetwork {
 	}
 
 	public float[] getOutputValues() {
-		return layers.get(layers.size() - 1).getValues();
+		return layers.getLast().getValues();
 	}
 	
 	public LinkedList<Layer> getLayers(){
 		return layers;
 	}
-	
+
+	public static float generateRandomFloat() {
+		return randomGen.nextFloat();
+	}
 }

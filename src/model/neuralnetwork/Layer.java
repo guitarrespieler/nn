@@ -1,7 +1,6 @@
 package model.neuralnetwork;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -13,12 +12,7 @@ public class Layer {
 	@SerializedName("inputWeights")
 	private ArrayList<float[]> inputWeights;
 	
-	public Layer(Layer otherLayer, ArrayList<float[]> inputWeights) {
-		biases = Arrays.copyOf(otherLayer.biases, otherLayer.biases.length);
-		values = Arrays.copyOf(otherLayer.values, otherLayer.values.length);
-		if(inputWeights != null)
-			this.inputWeights = new ArrayList<>(otherLayer.getInputWeights());
-	}
+	public Layer() {}
 	
 	public Layer(ArrayList<float[]> inputWeights, float[] biases, float[] values) {
 		this.inputWeights = inputWeights;
@@ -44,12 +38,15 @@ public class Layer {
 		if(previousLayer == null)
 			return;
 		
-		for(int i = 0; i < values.length; i++) {
+		final float[] prevLayersValues = previousLayer.getValues();
+		
+		for(int i = 0; i < numberOfNeurons(); i++) {
 			float tempValue = 0;
 			float[] weights = inputWeights.get(i);
 			
-			for (int j = 0; j < weights.length; j++){
-				float prevValue = previousLayer.getValues()[j];
+			for (int j = 0; j < prevLayersValues.length; j++){
+				
+				float prevValue = prevLayersValues[j];
 				
 				float weight = weights[j];
 				
@@ -62,7 +59,7 @@ public class Layer {
 		}
 	}
 	
-	public int size() {
+	public int numberOfNeurons() {
 		return values.length;
 	}
 

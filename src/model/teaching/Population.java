@@ -1,7 +1,6 @@
 package model.teaching;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 import model.neuralnetwork.NeuralNetwork;
@@ -63,7 +62,11 @@ public class Population {
 	public Generation breedNextGeneration(int numberOfEntities, int inputSize, float selectionRatio, float mutationFactor, boolean elitism, int[] architecture) {
 		Generation actualGeneration = generations.getLast();
 		
-		LinkedList<Entity> selectedEntities = selectBestEntities(actualGeneration, selectionRatio);
+		actualGeneration.orderByFitness();
+		
+		LinkedList<Entity> actualEntities = actualGeneration.getEntities();
+		
+		LinkedList<Entity> selectedEntities = selectEntities(actualEntities, selectionRatio);
 		
 		LinkedList<Entity> newEntities = new LinkedList<>();
 		
@@ -72,18 +75,31 @@ public class Population {
 			for(int j = i; j < selectedEntities.size(); j++) {
 				if(i == j)
 					continue;
-				newEntities.add(Entity.crossOver(selectedEntities.get(i), selectedEntities.get(j), mutationFactor));
+				Entity newEntity = Entity.crossOver(selectedEntities.get(i), selectedEntities.get(j), mutationFactor);
+				
+//				System.out.println("Difference is " + Entity.getDifference(selectedEntities.get(i), newEntity));
+//				System.out.println("Difference is " + Entity.getDifference(selectedEntities.get(j), newEntity));
+				
+				newEntities.add(newEntity);
 			}			
 		}
 		
+//		//adok hozzá 1 új entitást, túl belterjes a populáció
+//		if(random.nextFloat() < 0.3)
+//			newEntities.add(
+//				new Entity((
+//						new NeuralNetwork())
+//						.setInputLayer(new float[inputSize])
+//						.createLayers(architecture)
+//						.generateRandomWeights()
+//						.generateRandomBiases()));
+				
 		if(newEntities.size() > numberOfEntities) {
+			
 			//reduce the size of the population
 			while(newEntities.size() > numberOfEntities) {
-				float randomFloat = NeuralNetwork.generateRandomGaussian(0.5f, 0.2f);
 				int randomInt = random.nextInt(numberOfEntities);
-				
-				if(randomFloat < 0.5f)
-					newEntities.remove(randomInt);			
+				newEntities.remove(randomInt);
 			}
 		}else {
 			while(newEntities.size() < numberOfEntities) {
@@ -97,9 +113,18 @@ public class Population {
 			}
 		}
 		
+//		if(elitism) {//select the best 3
+//			for(int i = 0; i < 3; i++)
+//				newEntities.removeLast();
+//			
+//			for(int i = 0; i < 3; i++) {
+//				newEntities.addFirst(selectedEntities.get(i));
+//			}
+//		}
+		
 		if(elitism) {
-			newEntities.removeFirst();
-			newEntities.addFirst(selectedEntities.getFirst());
+			newEntities.removeLast();
+			newEntities.addFirst(actualEntities.getFirst());
 		}
 		
 		Generation newGen = new Generation();
@@ -109,27 +134,38 @@ public class Population {
 		return newGen;
 	}
 	
+
 	/**
-	 * Selects the best X % of the entities.
+	 * Selects the best X % of the entities, and some random one.
 	 */
-	private LinkedList<Entity> selectBestEntities(Generation actualGeneration, float selectionRatio) {
-		actualGeneration.orderByFitness();
-		
-		List<Entity> entities = actualGeneration.getEntities();
-		
+	private LinkedList<Entity> selectEntities(LinkedList<Entity> actualEntities, float selectionRatio) {
 		LinkedList<Entity> selected = new LinkedList<>();
 		
-		float numberOfSelectedEntities = entities.size() * selectionRatio;
+		final int actualEntitiesListSize = actualEntities.size();
+		
+		float numberOfSelectedEntities = actualEntitiesListSize * selectionRatio;
 		
 		
-		if(numberOfSelectedEntities > entities.size())
-			numberOfSelectedEntities = entities.size();
+		if(numberOfSelectedEntities > actualEntitiesListSize)
+			numberOfSelectedEntities = actualEntitiesListSize;
 		
 		int rounded = Math.round(numberOfSelectedEntities);
 		
 		for(int i = 0; i < rounded; i++) {
-			selected.add(entities.get(i));
+			selected.add(actualEntities.get(i));
 		}
+		
+		int numberOfRandomlyChoosed = actualEntitiesListSize / 30;
+		
+		while(selected.size() < numberOfRandomlyChoosed + rounded) {
+			int randomIndex = random.nextInt(rounded - numberOfRandomlyChoosed) + rounded;
+			
+			if(randomIndex > actualEntitiesListSize - 1)
+				randomIndex = actualEntitiesListSize - 1;
+			
+			selected.add(actualEntities.get(randomIndex));
+		}
+		
 		return selected;
 	}
 

@@ -1,6 +1,7 @@
 package model.neuralnetwork;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +9,7 @@ public class Layer {
 	@SerializedName("biases")
 	private float[] biases;
 	@SerializedName("values")
-	private float[] values;
+	private float[] values;	
 	@SerializedName("inputWeights")
 	private ArrayList<float[]> inputWeights;
 	
@@ -81,6 +82,11 @@ public class Layer {
 	}
 	public void setValues(float[] values) {
 		this.values = values;
+	}
+	
+	@Override
+	public String toString() {
+		return Arrays.toString(values);
 	}
 	
 	

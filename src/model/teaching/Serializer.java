@@ -19,11 +19,7 @@ public class Serializer{
 	public static final String extension = ".json";
 	
 	public static void serialize(Population pop) throws IOException {
-		if(gson == null) {
-			GsonBuilder builder = new GsonBuilder();
-			builder.serializeSpecialFloatingPointValues();
-			gson = builder.create();
-		}
+		initGson();
 
 		
 		LinkedList<Generation> generations = pop.getGenerations();
@@ -37,6 +33,16 @@ public class Serializer{
 			serializeThisGeneration(gen);
 		}
 		
+	}
+
+	private static void initGson() {
+		if(gson == null) {
+//			GsonBuilder builder = new GsonBuilder();
+//			builder.serializeSpecialFloatingPointValues();
+//			gson = builder.create();
+			
+			gson = new Gson();
+		}
 	}
 	
 	public static void serializeThisGeneration(Generation gen) throws IOException {
@@ -60,11 +66,7 @@ public class Serializer{
 	}
 	
 	public static Population deserialize() throws IOException {
-		if(gson == null) {
-			GsonBuilder builder = new GsonBuilder();
-			builder.serializeSpecialFloatingPointValues();
-			gson = builder.create();
-		}
+		initGson();
 		
 		int i = 0;
 		
@@ -99,11 +101,7 @@ public class Serializer{
 	}
 	
 	public static Population deserializeLastGeneration() throws FileNotFoundException {
-		if(gson == null) {
-			GsonBuilder builder = new GsonBuilder();
-			builder.serializeSpecialFloatingPointValues();
-			gson = builder.create();
-		}
+		initGson();
 		
 		LinkedList<Generation> generations = new LinkedList<>();
 		

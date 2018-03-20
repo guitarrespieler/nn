@@ -20,19 +20,14 @@ public class Population {
 	 * @param architecture
 	 * @return
 	 */
-	public static Generation createRandomGeneration(int numberOfEntities, int inputSize, int[] architecture) {
+	public static Generation createRandomGeneration(TeachingParams params) {
 		Generation generation = new Generation();
 		
 		LinkedList<Entity> entities = new LinkedList<>();
 		
-		for(int i = 0; i < numberOfEntities; i++) {
+		for(int i = 0; i < params.numberOfEntitiesPerGen; i++) {
 			entities.add(
-					new Entity((
-							new NeuralNetwork())
-							.setInputLayer(new float[inputSize])
-							.createLayers(architecture)
-							.generateRandomWeights()
-							.generateRandomBiases()));
+					createNewEntity(params));
 		}
 		generation.setEntities(entities);
 		
@@ -51,31 +46,27 @@ public class Population {
 	}
 	
 	/**
-	 * 
-	 * @param numberOfEntities
-	 * @param inputSize
-	 * @param selectionRatio
-	 * @param mutationFactor
-	 * @param elitism
-	 * @return
+	 * breeds the next generation
 	 */
-	public Generation breedNextGeneration(int numberOfEntities, int inputSize, float selectionRatio, float mutationFactor, boolean elitism, int[] architecture) {
+	public Generation breedNextGeneration(TeachingParams params) {
 		Generation actualGeneration = generations.getLast();
 		
 		actualGeneration.orderByFitness();
 		
 		LinkedList<Entity> actualEntities = actualGeneration.getEntities();
 		
-		LinkedList<Entity> selectedEntities = selectEntities(actualEntities, selectionRatio);
+		LinkedList<Entity> selectedEntities = selectEntities(actualEntities, params.selectionRatio);
+		
+		selectedEntities.add(createNewEntity(params));
 		
 		LinkedList<Entity> newEntities = new LinkedList<>();
 		
-		//create all possible crossovers
+		//create some crossovers
 		for(int i = 0; i < selectedEntities.size(); i++) {
-			for(int j = i; j < selectedEntities.size(); j++) {
+			for(int j = 0; j < selectedEntities.size(); j++) {
 				if(i == j)
 					continue;
-				Entity newEntity = Entity.crossOver(selectedEntities.get(i), selectedEntities.get(j), mutationFactor);
+				Entity newEntity = Entity.crossOver(selectedEntities.get(i), selectedEntities.get(j), params.mutationFactor);
 				
 //				System.out.println("Difference is " + Entity.getDifference(selectedEntities.get(i), newEntity));
 //				System.out.println("Difference is " + Entity.getDifference(selectedEntities.get(j), newEntity));
@@ -84,32 +75,13 @@ public class Population {
 			}			
 		}
 		
-//		//adok hozzá 1 új entitást, túl belterjes a populáció
-//		if(random.nextFloat() < 0.3)
-//			newEntities.add(
-//				new Entity((
-//						new NeuralNetwork())
-//						.setInputLayer(new float[inputSize])
-//						.createLayers(architecture)
-//						.generateRandomWeights()
-//						.generateRandomBiases()));
-				
-		if(newEntities.size() > numberOfEntities) {
-			
-			//reduce the size of the population
-			while(newEntities.size() > numberOfEntities) {
-				int randomInt = random.nextInt(numberOfEntities);
-				newEntities.remove(randomInt);
-			}
+		int numberOfEntities = params.numberOfEntitiesPerGen;
+		
+		if(newEntities.size() > numberOfEntities) {		
+			removeRandomEntity(newEntities, numberOfEntities);			//reduce the size of the population
 		}else {
 			while(newEntities.size() < numberOfEntities) {
-				newEntities.add(
-						new Entity((
-								new NeuralNetwork())
-								.setInputLayer(new float[inputSize])
-								.createLayers(architecture)
-								.generateRandomWeights()
-								.generateRandomBiases()));
+				newEntities.add(createNewEntity(params));
 			}
 		}
 		
@@ -122,8 +94,8 @@ public class Population {
 //			}
 //		}
 		
-		if(elitism) {
-			newEntities.removeLast();
+		if(params.elitism) {
+			removeRandomEntity(newEntities, numberOfEntities);
 			newEntities.addFirst(actualEntities.getFirst());
 		}
 		
@@ -132,6 +104,21 @@ public class Population {
 		newGen.setEntities(newEntities);
 		
 		return newGen;
+	}
+
+	private static Entity createNewEntity(TeachingParams params) {
+		return new Entity((new NeuralNetwork())
+				.setInputLayer(new float[params.inputSize])
+				.createLayers(params.architecture)
+				.generateRandomWeights()
+				.generateRandomBiases());
+	}
+
+	private void removeRandomEntity(LinkedList<Entity> newEntities, int numberOfEntities) {
+		while(newEntities.size() > numberOfEntities) {
+			int randomInt = random.nextInt(numberOfEntities);
+			newEntities.remove(randomInt);
+		}
 	}
 	
 
@@ -155,7 +142,7 @@ public class Population {
 			selected.add(actualEntities.get(i));
 		}
 		
-		int numberOfRandomlyChoosed = actualEntitiesListSize / 30;
+		int numberOfRandomlyChoosed = 1;
 		
 		while(selected.size() < numberOfRandomlyChoosed + rounded) {
 			int randomIndex = random.nextInt(rounded - numberOfRandomlyChoosed) + rounded;

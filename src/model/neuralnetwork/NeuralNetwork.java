@@ -1,4 +1,5 @@
 package model.neuralnetwork;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -19,7 +20,7 @@ public class NeuralNetwork {
 	private LinkedList<Layer> layers;
 
 	
-	private static Random randomGen = new Random();
+	private static SecureRandom randomGen = new SecureRandom();
 	
 	/**
 	 * várható érték
@@ -132,8 +133,8 @@ public class NeuralNetwork {
 				float[] weights = new float[previousLayerSize];
 				
 				for(int j = 0; j < weights.length; j++) {
-					weights[j] = generateRandomGaussian(averageVal, deviationVal);
-//					weights[j] = generateRandomFloat() * 2.0f - 1.0f;
+//					weights[j] = generateRandomGaussian(averageVal, deviationVal);
+					weights[j] = generateRandomFloat() * 2.0f - 1.0f;
 				}
 				
 				weightsList.add(weights);
@@ -152,7 +153,8 @@ public class NeuralNetwork {
 			
 			for(int i = 0; i < layerSize; i++) {
 //				biases[i] = generateRandomGaussian(averageVal, deviationVal);
-				biases[i] = generateRandomFloat() * 2.0f - 1.0f;
+//				biases[i] = generateRandomFloat() * 2.0f - 1.0f;
+				biases[i] = randomGen.nextInt(10);
 			}
 			layer.setBiases(biases);
 		}
@@ -187,5 +189,18 @@ public class NeuralNetwork {
 
 	public static float generateRandomFloat() {
 		return randomGen.nextFloat();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(inputLayer.toString());
+		
+		for (Layer layer : layers) {
+			sb.append("\n")
+			.append(layer.toString());
+		}
+		return sb.toString();
 	}
 }

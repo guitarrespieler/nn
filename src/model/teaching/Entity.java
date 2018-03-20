@@ -58,6 +58,8 @@ public class Entity implements Comparator<Entity>{
 			ArrayList<float[]> weightsList2 = actualLayer2.getInputWeights();
 			ArrayList<float[]> newWeightsList = new ArrayList<>();
 			
+			float[] newBiases = new float[actualLayer1.numberOfNeurons()];
+			
 			for(int j = 0; j < layerSize; j++) {
 				float[] weights1 = weightsList1.get(j);
 				float[] weights2 = weightsList2.get(j);
@@ -79,9 +81,19 @@ public class Entity implements Comparator<Entity>{
 					}		
 				}
 				newWeightsList.add(newWeights);
+				
+				float randomNum = NeuralNetwork.generateRandomFloat();
+				if(randomNum < mutationFactor && mutationFactor > 0.00001f) { //mutation
+					newBiases[j] = NeuralNetwork.generateRandomFloat() * 2.0f - 1.0f;
+				}else {
+					if((j % 2) == 0)
+						newBiases[j] = actualLayer1.getBiases()[j];
+					else
+						newBiases[j] = actualLayer2.getBiases()[j];
+				}
 			}
 			newLayer.setInputWeights(newWeightsList);
-			newLayer.setBiases(actualLayer1.getBiases()); //fixen az e1 rétegétől veszi át a bias értékeket
+			newLayer.setBiases(newBiases); //fixen az e1 rétegétől veszi át a bias értékeket
 			newNN.addLayer(newLayer);
 		}
 		
@@ -114,7 +126,9 @@ public class Entity implements Comparator<Entity>{
 				
 				for(int k = 0; k < weights1.length; k++) {
 					numberOfWeights++;
-					if(Float.compare(weights1[k], weights2[k]) != 0) {
+					final float diff = weights1[k]-weights2[k];
+					final float abs = Math.abs(diff);
+					if(abs > 0.001f) {
 						numberOfDiff++;
 					}
 					

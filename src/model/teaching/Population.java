@@ -77,8 +77,11 @@ public class Population {
 		
 		int numberOfEntities = params.numberOfEntitiesPerGen;
 		
-		if(newEntities.size() > numberOfEntities) {		
-			removeRandomEntity(newEntities, numberOfEntities);			//reduce the size of the population
+		if(newEntities.size() > numberOfEntities) {	
+			while(newEntities.size() > numberOfEntities) {
+				removeRandomEntity(newEntities);			//reduce the size of the population
+			}
+			
 		}else {
 			while(newEntities.size() < numberOfEntities) {
 				newEntities.add(createNewEntity(params));
@@ -95,7 +98,7 @@ public class Population {
 //		}
 		
 		if(params.elitism) {
-			removeRandomEntity(newEntities, numberOfEntities);
+			removeRandomEntity(newEntities);
 			newEntities.addFirst(actualEntities.getFirst());
 		}
 		
@@ -114,11 +117,9 @@ public class Population {
 				.generateRandomBiases());
 	}
 
-	private void removeRandomEntity(LinkedList<Entity> newEntities, int numberOfEntities) {
-		while(newEntities.size() > numberOfEntities) {
-			int randomInt = random.nextInt(numberOfEntities);
-			newEntities.remove(randomInt);
-		}
+	private void removeRandomEntity(LinkedList<Entity> newEntities) {
+		int randomInt = random.nextInt(newEntities.size() - 1);
+		newEntities.remove(randomInt);
 	}
 	
 
@@ -142,9 +143,9 @@ public class Population {
 			selected.add(actualEntities.get(i));
 		}
 		
-		int numberOfRandomlyChoosed = 1;
+		int numberOfRandomlyChoosed = 2;
 		
-		while(selected.size() < numberOfRandomlyChoosed + rounded) {
+		for(int x = 0; x < numberOfRandomlyChoosed; x++) {
 			int randomIndex = random.nextInt(rounded - numberOfRandomlyChoosed) + rounded;
 			
 			if(randomIndex > actualEntitiesListSize - 1)

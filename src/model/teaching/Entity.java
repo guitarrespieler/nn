@@ -73,7 +73,7 @@ public class Entity implements Comparator<Entity>{
 //						newWeights[k] = NeuralNetwork.generateRandomGaussian(NeuralNetwork.averageVal, NeuralNetwork.deviationVal);
 						newWeights[k] = NeuralNetwork.generateRandomFloat() * 2.0f - 1.0f;
 					}else {
-						if(k % 2 == 0) {						
+						if(k % 2 != 0) {						
 							newWeights[k] = weights1[k];						
 						}else {
 							newWeights[k] = weights2[k];
@@ -82,15 +82,15 @@ public class Entity implements Comparator<Entity>{
 				}
 				newWeightsList.add(newWeights);
 				
-				float randomNum = NeuralNetwork.generateRandomFloat();
-				if(randomNum < mutationFactor && mutationFactor > 0.00001f) { //mutation
-					newBiases[j] = NeuralNetwork.generateRandomFloat() * 2.0f - 1.0f;
-				}else {
+//				float randomNum = NeuralNetwork.generateRandomFloat();
+//				if(randomNum < mutationFactor && mutationFactor > 0.00001f) { //mutation
+//					newBiases[j] = NeuralNetwork.generateRandomFloat() * 2.0f - 1.0f;
+//				}else {
 					if((j % 2) == 0)
 						newBiases[j] = actualLayer1.getBiases()[j];
 					else
 						newBiases[j] = actualLayer2.getBiases()[j];
-				}
+//				}
 			}
 			newLayer.setInputWeights(newWeightsList);
 			newLayer.setBiases(newBiases); //fixen az e1 rétegétől veszi át a bias értékeket

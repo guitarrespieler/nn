@@ -59,21 +59,7 @@ public class Population {
 		
 		selectedEntities.add(createNewEntity(params));
 		
-		LinkedList<Entity> newEntities = new LinkedList<>();
-		
-		//create some crossovers
-		for(int i = 0; i < selectedEntities.size(); i++) {
-			for(int j = 0; j < selectedEntities.size(); j++) {
-				if(i == j)
-					continue;
-				Entity newEntity = Entity.crossOver(selectedEntities.get(i), selectedEntities.get(j), params.mutationFactor);
-				
-//				System.out.println("Difference is " + Entity.getDifference(selectedEntities.get(i), newEntity));
-//				System.out.println("Difference is " + Entity.getDifference(selectedEntities.get(j), newEntity));
-				
-				newEntities.add(newEntity);
-			}			
-		}
+		LinkedList<Entity> newEntities = createNewEntities(params, selectedEntities);
 		
 		int numberOfEntities = params.numberOfEntitiesPerGen;
 		
@@ -107,6 +93,25 @@ public class Population {
 		newGen.setEntities(newEntities);
 		
 		return newGen;
+	}
+
+	private LinkedList<Entity> createNewEntities(TeachingParams params, LinkedList<Entity> selectedEntities) {
+		LinkedList<Entity> newEntities = new LinkedList<>();
+		
+		//create some crossovers
+		for(int i = 0; i < selectedEntities.size(); i++) {
+			for(int j = 0; j < selectedEntities.size(); j++) {
+				if(i == j)
+					continue;
+				Entity newEntity = Entity.crossOver(selectedEntities.get(i), selectedEntities.get(j), params.mutationFactor);
+				
+//				System.out.println("Difference is " + Entity.getDifference(selectedEntities.get(i), newEntity));
+//				System.out.println("Difference is " + Entity.getDifference(selectedEntities.get(j), newEntity));
+				
+				newEntities.add(newEntity);
+			}			
+		}
+		return newEntities;
 	}
 
 	private static Entity createNewEntity(TeachingParams params) {

@@ -2,6 +2,7 @@ package model.teaching;
 
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -17,15 +18,15 @@ public class Generation {
 	
 	@Expose
 	@SerializedName("Entities")
-	private LinkedList<Entity> entities;
+	private List<Entity> entities;
 	
 //	public static transient int numOfmutatedGenes = 0;
 
 	Generation(){}
 	
 	public void orderByFitness() {
-		Collections.sort(entities, entities.getFirst());
-		maxFitnessPoint = entities.getFirst().getFitness();
+		Collections.sort(entities, entities.get(0));
+		maxFitnessPoint = entities.get(0).getFitness();
 	}
 	
 	public int getGenerationSize() {
@@ -34,11 +35,11 @@ public class Generation {
 		else return entities.size();
 	}
 
-	public LinkedList<Entity> getEntities() {
+	public List<Entity> getEntities() {
 		return entities;
 	}
 
-	public void setEntities(LinkedList<Entity> entities) {
+	public void setEntities(List<Entity> entities) {
 		this.entities = entities;
 	}
 
@@ -58,5 +59,8 @@ public class Generation {
 		this.maxFitnessPoint = maxFitnessPoint;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "generation size: " + entities.size();
+	}
 }

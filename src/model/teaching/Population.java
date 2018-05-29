@@ -1,6 +1,10 @@
 package model.teaching;
 
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
@@ -53,14 +57,18 @@ public class Population {
 
 		actualGeneration.orderByFitness();
 
-		LinkedList<Entity> actualEntities = actualGeneration.getEntities();
+		List<Entity> actualEntities = actualGeneration.getEntities();
 
-		LinkedList<Entity> selectedEntities = selectEntities(actualEntities, params.selectionRatio);
+		List<Entity> selectedEntities = selectEntities(actualEntities, params.selectionRatio);
 
 		if (random.nextFloat() > 0.5)
-			selectedEntities.addLast(createNewEntity(params));
+			selectedEntities.add(createNewEntity(params));
 
-		LinkedList<Entity> newEntities = createNewEntities(params, selectedEntities);
+		long startTime = Calendar.getInstance().getTimeInMillis();
+		List<Entity> newEntities = createNewEntities(params, selectedEntities);
+		long endTime = Calendar.getInstance().getTimeInMillis();
+
+		System.out.println("creating new entities took " + (endTime - startTime) + " ms");
 
 		int numberOfEntities = params.numberOfEntitiesPerGen;
 
@@ -91,7 +99,7 @@ public class Population {
 			}
 
 			for (int i = 0; i < 3; i++) {
-				newEntities.addFirst(actualEntities.get(i));
+				newEntities.add(actualEntities.get(i));
 			}
 		}
 
@@ -102,26 +110,72 @@ public class Population {
 		return newGen;
 	}
 
-	private LinkedList<Entity> createNewEntities(TeachingParams params, LinkedList<Entity> selectedEntities) {
-		LinkedList<Entity> newEntities = new LinkedList<>();
+	private List<Entity> createNewEntities(TeachingParams params, List<Entity> selectedEntities) {
+		List<Entity> newEntities = Collections.synchronizedList(new LinkedList<Entity>());
+
+		CountDownLatch latch = new CountDownLatch(selectedEntities.size());
 
 		// create some crossovers
-		for(int i = 0; i < selectedEntities.size(); i++) {
-			for(int j = i + 1; j < selectedEntities.size(); j++) {
-				Entity newEntity1 = Entity.crossOver(selectedEntities.get(i), selectedEntities.get(j),
-						params.mutationFactor);
-				Entity newEntity2 = Entity.crossOver(selectedEntities.get(j), selectedEntities.get(i),
-						params.mutationFactor);
+		for (int i = 0; i < params.getNumberOfEntitiesPerGen(); i++) {
+			(new Thread(() -> {
+				Random random = new Random();
 
-				// System.out.println("Difference is " +
-				// Entity.getDifference(selectedEntities.get(i), newEntity));
-				// System.out.println("Difference is " +
-				// Entity.getDifference(selectedEntities.get(j), newEntity));
+				int entity_1 = 0;
+				int entity_2 = 0;
+
+				while (entity_1 == entity_2) {
+					entity_1 = random.nextInt(selectedEntities.size() - 1);
+					entity_2 = random.nextInt(selectedEntities.size() - 1);
+				}
 				
-				newEntities.add(newEntity1);
-				newEntities.add(newEntity2);
-			}
-		}		
+				final Entity e1 = selectedEntities.get(entity_1);
+				final Entity e2 = selectedEntities.get(entity_2);
+				
+				Entity newEntity = Entity.crossOver(e1, e2, params.mutationFactor);
+				
+				newEntities.add(newEntity);
+				
+				latch.countDown();
+			})).start();
+		}
+
+//		for (int i = 0; i < selectedEntities.size(); i++) {
+//			final int tempVal = i;
+//			(new Thread(() -> {
+//				int index = tempVal;
+//
+//				final Entity entity_i = selectedEntities.get(index);
+//
+//				List<Entity> tempList = new LinkedList<>();
+//
+//				for (int j = 0; j < selectedEntities.size(); j++) {
+//					if (index == j)
+//						continue;
+//
+//					final Entity entity_j = selectedEntities.get(j);
+//
+//					Entity newEntity = Entity.crossOver(entity_i, entity_j, params.mutationFactor);
+//
+//					// System.out.println("Difference is " +
+//					// Entity.getDifference(selectedEntities.get(i), newEntity));
+//					// System.out.println("Difference is " +
+//					// Entity.getDifference(selectedEntities.get(j), newEntity));
+//
+//					tempList.add(newEntity);
+//				}
+//				newEntities.addAll(tempList);
+//
+//				latch.countDown();
+//
+//			})).start();
+//		}
+
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 		return newEntities;
 	}
 
@@ -130,7 +184,7 @@ public class Population {
 				.createLayers(params.architecture).generateRandomWeights().generateRandomBiases());
 	}
 
-	private void removeRandomEntity(LinkedList<Entity> newEntities) {
+	private void removeRandomEntity(List<Entity> newEntities) {
 		int randomInt = random.nextInt(newEntities.size() - 1);
 		newEntities.remove(randomInt);
 	}
@@ -138,7 +192,7 @@ public class Population {
 	/**
 	 * Selects the best X % of the entities, and some random one.
 	 */
-	private LinkedList<Entity> selectEntities(LinkedList<Entity> actualEntities, float selectionRatio) {
+	private LinkedList<Entity> selectEntities(List<Entity> actualEntities, float selectionRatio) {
 		LinkedList<Entity> selected = new LinkedList<>();
 
 		final int actualEntitiesListSize = actualEntities.size();

@@ -12,20 +12,20 @@ import com.google.gson.annotations.SerializedName;
 public class TeachingParams {
 	
 	@SerializedName("maxNumberOfGenerations")
-	public int maxNumberOfGenerations = 10000;
+	public int maxNumberOfGenerations = 50000;
 	@SerializedName("mutationFactor")
 	public float mutationFactor = 0.0f;
 	@SerializedName("fitnessGoal")
 	public int fitnessGoal = 3000;	
 	@SerializedName("continueTeaching")
-	public boolean continueTeaching = false;
+	public boolean continueTeaching = true;
 	@SerializedName("numberOfEntitiesPerGen")
-	public int numberOfEntitiesPerGen = 50;
+	public int numberOfEntitiesPerGen = 100;
 	@SerializedName("inputSize")
 	public int inputSize = 6;
 	@SerializedName("selectionRatio")
 	public float selectionRatio = 0.3f;
-	public int[] architecture = {6,6,5};
+	public int[] architecture = {10,10,3};
 	@SerializedName("elitism")
 	public boolean elitism = true;
 	@SerializedName("avgFitness")

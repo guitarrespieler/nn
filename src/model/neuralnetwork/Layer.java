@@ -3,22 +3,33 @@ package model.neuralnetwork;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Layer {
+	@Expose
+	@SerializedName("size")
+	private int size;
+	
+	@Expose
 	@SerializedName("biases")
 	private float[] biases;
-	@SerializedName("values")
+
 	private float[] values;	
+
+	@Expose
 	@SerializedName("inputWeights")
 	private ArrayList<float[]> inputWeights;
 	
-	public Layer() {}
+	public Layer() {
+	}
 	
-	public Layer(ArrayList<float[]> inputWeights, float[] biases, float[] values) {
+	public Layer(ArrayList<float[]> inputWeights, float[] biases, float[] values, int layerSize) {
 		this.inputWeights = inputWeights;
 		this.biases = biases;
 		this.values = values; 
+		
+		this.size = layerSize;
 	}
 	
 	public Layer(int previousLayersSize, int layerSize) {
@@ -30,6 +41,7 @@ public class Layer {
 		
 		this.biases = new float[layerSize];
 		this.values = new float[layerSize];
+		this.size = layerSize;
 	}
 
 	/**
@@ -38,6 +50,8 @@ public class Layer {
 	public void activateLayer(Layer previousLayer, Activation mode) {
 		if(previousLayer == null)
 			return;
+		if(values == null)
+			values = new float[numberOfNeurons()];
 		
 		final float[] prevLayersValues = previousLayer.getValues();
 		
@@ -61,7 +75,7 @@ public class Layer {
 	}
 	
 	public int numberOfNeurons() {
-		return values.length;
+		return size;
 	}
 
 	//getters, setters
@@ -86,7 +100,9 @@ public class Layer {
 	
 	@Override
 	public String toString() {
-		return Arrays.toString(values);
+		if(values != null)
+			return Arrays.toString(values);
+		return "no data";
 	}
 	
 	

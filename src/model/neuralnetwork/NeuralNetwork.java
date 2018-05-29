@@ -2,20 +2,22 @@ package model.neuralnetwork;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Random;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class NeuralNetwork {
 	/**
 	 * Here is the input layer
 	 */
+	@Expose
 	@SerializedName("inputLayer")
 	private Layer inputLayer;
 	
 	/**
 	 * List of layers
 	 */
+	@Expose
 	@SerializedName("layers")
 	private LinkedList<Layer> layers;
 
@@ -59,7 +61,7 @@ public class NeuralNetwork {
 	 * @param values the input values of the Neural Network
 	 */
 	public NeuralNetwork setInputLayer(float[] values) {
-		inputLayer = new Layer(null, null, values);
+		inputLayer = new Layer(null, null, values, values.length);
 		
 		return this;
 	}
@@ -70,7 +72,7 @@ public class NeuralNetwork {
 	 * @return
 	 */
 	public NeuralNetwork setInputLayer(Layer layer) {
-		inputLayer = new Layer(layer.getInputWeights(), layer.getBiases(), layer.getValues());
+		inputLayer = new Layer(layer.getInputWeights(), layer.getBiases(), layer.getValues(), layer.numberOfNeurons());
 		
 		return this;
 	}
@@ -154,7 +156,7 @@ public class NeuralNetwork {
 			for(int i = 0; i < layerSize; i++) {
 //				biases[i] = generateRandomGaussian(averageVal, deviationVal);
 //				biases[i] = generateRandomFloat() * 2.0f - 1.0f;
-				biases[i] = randomGen.nextInt(10);
+				biases[i] = randomGen.nextInt(10) - 5;
 			}
 			layer.setBiases(biases);
 		}

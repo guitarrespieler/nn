@@ -37,11 +37,12 @@ public class Serializer{
 
 	private static void initGson() {
 		if(gson == null) {
-//			GsonBuilder builder = new GsonBuilder();
+			gson = (new GsonBuilder())
 //			builder.serializeSpecialFloatingPointValues();
-//			gson = builder.create();
+			.excludeFieldsWithoutExposeAnnotation()
+			.create();
 			
-			gson = new Gson();
+//			gson = new Gson();
 		}
 	}
 	
@@ -100,7 +101,7 @@ public class Serializer{
 		return pop;
 	}
 	
-	public static Population deserializeLastGeneration() throws FileNotFoundException {
+	public static Population deserializeLastGeneration(String filename) throws FileNotFoundException {
 		initGson();
 		
 		LinkedList<Generation> generations = new LinkedList<>();
@@ -109,7 +110,12 @@ public class Serializer{
 		if(dir.exists()) {
 			int i = dir.listFiles().length - 1;
 			
-			File f = new File(dirName + preName + i + extension);
+			if(filename == null || filename.isEmpty())
+				filename = dirName + preName + i + extension;
+			else
+				filename = dirName + preName + filename + extension;
+			
+			File f = new File(filename);
 				
 			if(f.exists()) {
 				

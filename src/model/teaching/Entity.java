@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import model.neuralnetwork.Layer;
 import model.neuralnetwork.NeuralNetwork;
 
 public class Entity implements Comparator<Entity>{
-	
+	@Expose
 	@SerializedName("fitness")
 	private int fitness;
 	
+	@Expose
 	@SerializedName("neuralnetwork")
 	private NeuralNetwork nn;
 	

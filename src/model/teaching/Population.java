@@ -57,7 +57,8 @@ public class Population {
 		
 		LinkedList<Entity> selectedEntities = selectEntities(actualEntities, params.selectionRatio);
 		
-		selectedEntities.add(createNewEntity(params));
+		if(random.nextFloat() > 0.5)
+			selectedEntities.addLast(createNewEntity(params));
 		
 		LinkedList<Entity> newEntities = createNewEntities(params, selectedEntities);
 		
@@ -83,9 +84,15 @@ public class Population {
 //			}
 //		}
 		
-		if(params.elitism) {
-			removeRandomEntity(newEntities);
-			newEntities.addFirst(actualEntities.getFirst());
+		if(params.elitism) {//ha igen, a legjobb 3 túléli
+			
+			for(int i = 0; i < 3; i++) {
+				removeRandomEntity(newEntities);
+			}
+			
+			for(int i = 0; i < 3; i++) {
+				newEntities.addFirst(actualEntities.get(i));
+			}
 		}
 		
 		Generation newGen = new Generation();

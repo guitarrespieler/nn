@@ -3,14 +3,19 @@ package model.teaching;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Generation {
-
+	@Expose
 	@SerializedName("generationNumber")
 	private int generationNumber = 0;
+	
+	@Expose
 	@SerializedName("maxFitnessPoint")
 	private int maxFitnessPoint = 0;
+	
+	@Expose
 	@SerializedName("Entities")
 	private LinkedList<Entity> entities;
 	

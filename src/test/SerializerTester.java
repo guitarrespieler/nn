@@ -75,14 +75,14 @@ class SerializerTester {
 	}
 	
 //	@Test
-	void deserializeLastGen() throws IOException {
-		serializeMoreTest();
-		
-		Population pop2 = Serializer.deserializeLastGeneration();
-		
-		assertEquals(pop2.getGenerations().size(), 1);
-		assertEquals(pop2.getGenerations().getFirst().getGenerationNumber(), 59);
-	}
+//	void deserializeLastGen() throws IOException {
+//		serializeMoreTest();
+//		
+//		Population pop2 = Serializer.deserializeLastGeneration();
+//		
+//		assertEquals(pop2.getGenerations().size(), 1);
+//		assertEquals(pop2.getGenerations().getFirst().getGenerationNumber(), 59);
+//	}
 	
 	@Test
 	void deserializeTest3() throws IOException {

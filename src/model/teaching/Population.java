@@ -138,38 +138,7 @@ public class Population {
 				latch.countDown();
 			})).start();
 		}
-
-//		for (int i = 0; i < selectedEntities.size(); i++) {
-//			final int tempVal = i;
-//			(new Thread(() -> {
-//				int index = tempVal;
-//
-//				final Entity entity_i = selectedEntities.get(index);
-//
-//				List<Entity> tempList = new LinkedList<>();
-//
-//				for (int j = 0; j < selectedEntities.size(); j++) {
-//					if (index == j)
-//						continue;
-//
-//					final Entity entity_j = selectedEntities.get(j);
-//
-//					Entity newEntity = Entity.crossOver(entity_i, entity_j, params.mutationFactor);
-//
-//					// System.out.println("Difference is " +
-//					// Entity.getDifference(selectedEntities.get(i), newEntity));
-//					// System.out.println("Difference is " +
-//					// Entity.getDifference(selectedEntities.get(j), newEntity));
-//
-//					tempList.add(newEntity);
-//				}
-//				newEntities.addAll(tempList);
-//
-//				latch.countDown();
-//
-//			})).start();
-//		}
-
+		
 		try {
 			latch.await();
 		} catch (InterruptedException e) {

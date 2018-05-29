@@ -106,23 +106,23 @@ public class Population {
 		LinkedList<Entity> newEntities = new LinkedList<>();
 
 		// create some crossovers
-		for (int k = 0; k < 2; k++) {
-			for (int i = 0; i < selectedEntities.size(); i++) {
-				int randomNum = random.nextInt(selectedEntities.size() - 1);
-
-				Entity newEntity = Entity.crossOver(selectedEntities.get(i), selectedEntities.get(randomNum),
+		for(int i = 0; i < selectedEntities.size(); i++) {
+			for(int j = i + 1; j < selectedEntities.size(); j++) {
+				Entity newEntity1 = Entity.crossOver(selectedEntities.get(i), selectedEntities.get(j),
 						params.mutationFactor);
-
-				newEntities.add(newEntity);
+				Entity newEntity2 = Entity.crossOver(selectedEntities.get(j), selectedEntities.get(i),
+						params.mutationFactor);
 
 				// System.out.println("Difference is " +
 				// Entity.getDifference(selectedEntities.get(i), newEntity));
 				// System.out.println("Difference is " +
 				// Entity.getDifference(selectedEntities.get(j), newEntity));
+				
+				newEntities.add(newEntity1);
+				newEntities.add(newEntity2);
 			}
-		}
+		}		
 		return newEntities;
-
 	}
 
 	private static Entity createNewEntity(TeachingParams params) {

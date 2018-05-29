@@ -61,14 +61,14 @@ public class Population {
 
 		List<Entity> selectedEntities = selectEntities(actualEntities, params.selectionRatio);
 
-		if (random.nextFloat() > 0.5)
+		if (random.nextFloat() > 0.9f)
 			selectedEntities.add(createNewEntity(params));
 
-		long startTime = Calendar.getInstance().getTimeInMillis();
+//		long startTime = Calendar.getInstance().getTimeInMillis();
 		List<Entity> newEntities = createNewEntities(params, selectedEntities);
-		long endTime = Calendar.getInstance().getTimeInMillis();
+//		long endTime = Calendar.getInstance().getTimeInMillis();
 
-		System.out.println("creating new entities took " + (endTime - startTime) + " ms");
+//		System.out.println("creating new entities took " + (endTime - startTime) + " ms");
 
 		int numberOfEntities = params.numberOfEntitiesPerGen;
 
@@ -99,7 +99,7 @@ public class Population {
 			}
 
 			for (int i = 0; i < 3; i++) {
-				newEntities.add(actualEntities.get(i));
+				newEntities.add(0, actualEntities.get(i));
 			}
 		}
 
@@ -124,8 +124,8 @@ public class Population {
 				int entity_2 = 0;
 
 				while (entity_1 == entity_2) {
-					entity_1 = random.nextInt(selectedEntities.size() - 1);
-					entity_2 = random.nextInt(selectedEntities.size() - 1);
+					entity_1 = random.nextInt(selectedEntities.size() / 5); //a legsikeresebb 20%-bol valogasson
+					entity_2 = random.nextInt(selectedEntities.size());
 				}
 				
 				final Entity e1 = selectedEntities.get(entity_1);
@@ -154,7 +154,7 @@ public class Population {
 	}
 
 	private void removeRandomEntity(List<Entity> newEntities) {
-		int randomInt = random.nextInt(newEntities.size() - 1);
+		int randomInt = random.nextInt(newEntities.size());
 		newEntities.remove(randomInt);
 	}
 
